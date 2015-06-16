@@ -42,7 +42,7 @@ public class Panel extends JPanel implements ActionListener, MouseListener {
 	private int x[] = new int[map];// 
 	private int y[] = new int[map];
 	
-	private boolean gameStart = false;
+	private boolean inGame = false;
     private boolean leftDirection = false;
     private boolean rightDirection = true;
     private boolean upDirection = false;
@@ -50,7 +50,7 @@ public class Panel extends JPanel implements ActionListener, MouseListener {
     
     private Image apple;
     
-    SnakeInGame inGame = new SnakeInGame();
+    
     
 	public Panel() {
 		setLayout(null);
@@ -147,7 +147,7 @@ public class Panel extends JPanel implements ActionListener, MouseListener {
 		}
 		
 		if (e.getActionCommand().equals("Start")) {
-			play(null);
+			play();
 		}
 		
 	}
@@ -174,23 +174,42 @@ public class Panel extends JPanel implements ActionListener, MouseListener {
 		}
 	}
 	
-	public void play(Graphics g) {
+	public void play() {
 		removeMenuButtons();
 		bodySegments = 2;
 		
+		drawStartingSnake(null);
+
+	    gameUpdate(null);
+	}
+	
+	public void gameUpdate(Graphics g){
+		while (inGame == true){
+			drawHead(g);
+			drawBody(g);
+			move();
+		try {
+			Thread.sleep(DELAY);
+		}
+		catch (Exception alternate) {
+		}
+		}
+	}
+	
+	public void drawStartingSnake(Graphics g) {
 	    for (int counter = 0; counter < bodySegments; counter++) {
 	        x[counter] = SHAPEWIDTH - counter * SHAPEWIDTH;
 	        y[counter] = SHAPEHEIGHT;
-	        gameStart = true;
+	        inGame = true;
 	    }
-		
-		timer = new Timer(DELAY, this);
-		//timer.start();
 	}
 	
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		if (gameStart == true) {
+		
+		Graphics draw = g;
+		
+		if (inGame == true) {
 			drawHead(g);
 			drawBody(g);
 		}
@@ -207,14 +226,13 @@ public class Panel extends JPanel implements ActionListener, MouseListener {
 		}
 	
 	public void drawBody(Graphics g) {
-		if (gameStart ==  true){
+		if (inGame ==  true){
 		for (int counter = 1; counter < bodySegments; counter ++) {
 			g.setColor(Color.WHITE);
 			g.drawRect(x[counter], y[counter], SHAPEWIDTH, SHAPEHEIGHT);
 			g.fillRect(x[counter], y[counter], SHAPEWIDTH, SHAPEHEIGHT);
 		}
 		Toolkit.getDefaultToolkit().sync();
-		//g.drawRect(x, y, width, height);
 		}
 		else {
 			gameOver(g);
@@ -222,11 +240,12 @@ public class Panel extends JPanel implements ActionListener, MouseListener {
 	}
 	
 	public void move() {
-		
+		// This will allow the body segments of to move 
 		for (int counter = bodySegments; counter > 0; counter --) {
 			x[counter] = x[(counter - 1)];
 			y[counter] = y[(counter - 1)];
 		}
+		
 		
 		if (leftDirection == true) {
 			x[0] -= dotSize;
@@ -250,11 +269,13 @@ public class Panel extends JPanel implements ActionListener, MouseListener {
 	}
 
 
-	
+	public void checkCollision(){
+		
+	}
 	
 	  private class TAdapter extends KeyAdapter {
 
-	        @Override
+	     
 	        public void keyPressed(KeyEvent e) {
 
 	            int key = e.getKeyCode();
