@@ -147,10 +147,12 @@ public class Panel extends JPanel implements ActionListener, MouseListener {
 		}
 		
 		if (e.getActionCommand().equals("Start")) {
-			inGame.play(null);
+			play(null);
 		}
 		
 	}
+	
+
 	
 	public void loadAppleImage() {
 		ImageIcon apple = new ImageIcon("apple.png");
@@ -172,7 +174,19 @@ public class Panel extends JPanel implements ActionListener, MouseListener {
 		}
 	}
 	
-
+	public void play(Graphics g) {
+		removeMenuButtons();
+		bodySegments = 2;
+		
+	    for (int counter = 0; counter < bodySegments; counter++) {
+	        x[counter] = SHAPEWIDTH - counter * SHAPEWIDTH;
+	        y[counter] = SHAPEHEIGHT;
+	        gameStart = true;
+	    }
+		
+		timer = new Timer(DELAY, this);
+		//timer.start();
+	}
 	
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);

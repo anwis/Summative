@@ -12,8 +12,6 @@ import javax.swing.Timer;
 
 public class SnakeInGame extends JPanel implements ActionListener {
 
-	Panel menu = new Panel();
-
 	private JLabel title;
 	private JButton menuStart, menuQUIT, highScores, instructions;
 	private Timer timer;
@@ -43,19 +41,11 @@ public class SnakeInGame extends JPanel implements ActionListener {
     
     private Image apple;
     
-    public void play(Graphics g) {
-		menu.removeMenuButtons();
-		bodySegments = 2;
-		
-	    for (int counter = 0; counter < bodySegments; counter++) {
-	        x[counter] = SHAPEWIDTH - counter * SHAPEWIDTH;
-	        y[counter] = SHAPEHEIGHT;
-	        gameStart = true;
-	    }
-		
-		timer = new Timer(DELAY, this);
-		//timer.start();
-	}
+
+    
+
+    
+    
     
 	@Override
 	public void actionPerformed(ActionEvent e) {
