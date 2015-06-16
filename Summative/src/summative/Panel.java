@@ -24,8 +24,8 @@ public class Panel extends JPanel implements ActionListener, MouseListener {
 	private JButton menuStart, menuQUIT, highScores, instructions;
 	private Timer timer;
 	
-	private int SHAPEHEIGHT = 10;
-	private int SHAPEWIDTH = 10;
+	private int SHAPEHEIGHT = 15;
+	private int SHAPEWIDTH = 15;
 	private int BUTTONHEIGHT = 50;
 	private int BUTTONWIDTH = 150;
 	private int DELAY = 100;
@@ -36,7 +36,7 @@ public class Panel extends JPanel implements ActionListener, MouseListener {
 	private int appleX;
 	private int appleY;
 	private int randomNum;
-	private int dotSize;
+	private int dotSize = 15;
 	
 	private int x[] = new int[map];// 
 	private int y[] = new int[map];
@@ -160,7 +160,6 @@ public class Panel extends JPanel implements ActionListener, MouseListener {
 		randomNum = (int)(Math.random() * map);
 		appleY = randomNum;
 		
-		
 	}
 	
 
@@ -190,13 +189,29 @@ public class Panel extends JPanel implements ActionListener, MouseListener {
 	
 	public void move() {
 		
+		if (leftDirection == true) {
+			x[0] -= dotSize;
+		}
 		
+		if (rightDirection == true) {
+			x[0] += dotSize;
+		}
+		
+		if (downDirection == true) {
+			y[0] -= dotSize;
+		}
+		
+		if (upDirection == true) {
+			y[0] += dotSize;
+		}
 	}
 
 
 	public void play(Graphics g) {
 		removeMenuButtons();
 		bodySegments = 2;
+		
+		
 		timer = new Timer(DELAY, this);
 		//timer.start();
 	}
