@@ -3,15 +3,20 @@ package summative;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import javax.swing.Timer;
+
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+import javax.swing.Timer;
 
 public class Panel extends JPanel implements ActionListener, MouseListener {
 
@@ -28,6 +33,10 @@ public class Panel extends JPanel implements ActionListener, MouseListener {
 	private int HEIGHT = 650;
 	private int map = (WIDTH * HEIGHT); // This variable accounts for all of the dots or pixels that are seeable in the game board
 	private int bodySegments;
+	private int appleX;
+	private int appleY;
+	private int randomNum;
+	private int dotSize;
 	
 	private int x[] = new int[map];// 
 	private int y[] = new int[map];
@@ -37,6 +46,8 @@ public class Panel extends JPanel implements ActionListener, MouseListener {
     private boolean rightDirection = true;
     private boolean upDirection = false;
     private boolean downDirection = false;
+    
+    private Image apple;
 
 	public Panel() {
 		setLayout(null);
@@ -126,7 +137,7 @@ public class Panel extends JPanel implements ActionListener, MouseListener {
 		add(title);
 		repaint();
 	}
-
+	
 	public void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand().equals("QUIT")) {
 			System.exit(0);
@@ -138,7 +149,19 @@ public class Panel extends JPanel implements ActionListener, MouseListener {
 		}
 	}
 	
-	public void get
+	public void loadAppleImage() {
+		ImageIcon apple = new ImageIcon("apple.png");
+	}
+	
+	public void createApple() {
+		randomNum = (int)(Math.random() * map);
+		appleX = randomNum;
+		
+		randomNum = (int)(Math.random() * map);
+		appleY = randomNum;
+		
+		
+	}
 	
 
 	
@@ -164,6 +187,11 @@ public class Panel extends JPanel implements ActionListener, MouseListener {
 		g.setColor(Color.WHITE);
 		//g.drawRect(x, y, width, height);
 	}
+	
+	public void move() {
+		
+		
+	}
 
 
 	public void play(Graphics g) {
@@ -172,5 +200,38 @@ public class Panel extends JPanel implements ActionListener, MouseListener {
 		timer = new Timer(DELAY, this);
 		//timer.start();
 	}
+	
+	  private class TAdapter extends KeyAdapter {
+
+	        @Override
+	        public void keyPressed(KeyEvent e) {
+
+	            int key = e.getKeyCode();
+
+	            if ((key == KeyEvent.VK_LEFT) && (!rightDirection)) {
+	                leftDirection = true;
+	                upDirection = false;
+	                downDirection = false;
+	            }
+
+	            if ((key == KeyEvent.VK_RIGHT) && (!leftDirection)) {
+	                rightDirection = true;
+	                upDirection = false;
+	                downDirection = false;
+	            }
+
+	            if ((key == KeyEvent.VK_UP) && (!downDirection)) {
+	                upDirection = true;
+	                rightDirection = false;
+	                leftDirection = false;
+	            }
+
+	            if ((key == KeyEvent.VK_DOWN) && (!upDirection)) {
+	                downDirection = true;
+	                rightDirection = false;
+	                leftDirection = false;
+	            }
+	        }
+	    }
 
 }
