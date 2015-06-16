@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -24,8 +25,8 @@ public class Panel extends JPanel implements ActionListener, MouseListener {
 	private JButton menuStart, menuQUIT, highScores, instructions;
 	private Timer timer;
 	
-	private int SHAPEHEIGHT = 15;
-	private int SHAPEWIDTH = 15;
+	private int SHAPEHEIGHT = 20;
+	private int SHAPEWIDTH = 20;
 	private int BUTTONHEIGHT = 50;
 	private int BUTTONWIDTH = 150;
 	private int DELAY = 100;
@@ -48,7 +49,9 @@ public class Panel extends JPanel implements ActionListener, MouseListener {
     private boolean downDirection = false;
     
     private Image apple;
-
+    
+    SnakeInGame inGame = new SnakeInGame();
+    
 	public Panel() {
 		setLayout(null);
 		Font titleFont = new Font("Verdana", Font.ITALIC, 38);
@@ -144,9 +147,9 @@ public class Panel extends JPanel implements ActionListener, MouseListener {
 		}
 		
 		if (e.getActionCommand().equals("Start")) {
-			gameStart = true;
-			play(null);
+			inGame.play(null);
 		}
+		
 	}
 	
 	public void loadAppleImage() {
@@ -162,32 +165,54 @@ public class Panel extends JPanel implements ActionListener, MouseListener {
 		
 	}
 	
+	public void checkIfAppleWasEaten() {
+		if ((x[0] == appleX) && (y[0] == appleY)){
+			bodySegments ++;
+			createApple();
+		}
+	}
+	
 
 	
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		if (gameStart == true) {
 			drawHead(g);
+			drawBody(g);
 		}
 	}
 	
 	public void drawHead(Graphics g) {
-
 		g.setColor(Color.GREEN);
-		g.drawRect((WIDTH - SHAPEWIDTH) / 2,
-				((HEIGHT - SHAPEHEIGHT) / 2), SHAPEWIDTH,
+		g.drawRect(x[0],
+				y[0], SHAPEWIDTH,
 				SHAPEHEIGHT);
-		g.fillRect((WIDTH - SHAPEWIDTH) / 2,
-				((HEIGHT - SHAPEHEIGHT) / 2), SHAPEWIDTH,
-				SHAPEHEIGHT);
+		g.fillRect(x[0],
+				y[0], SHAPEWIDTH,
+				SHAPEHEIGHT);	
 		}
 	
 	public void drawBody(Graphics g) {
-		g.setColor(Color.WHITE);
+		if (gameStart ==  true){
+		for (int counter = 1; counter < bodySegments; counter ++) {
+			g.setColor(Color.WHITE);
+			g.drawRect(x[counter], y[counter], SHAPEWIDTH, SHAPEHEIGHT);
+			g.fillRect(x[counter], y[counter], SHAPEWIDTH, SHAPEHEIGHT);
+		}
+		Toolkit.getDefaultToolkit().sync();
 		//g.drawRect(x, y, width, height);
+		}
+		else {
+			gameOver(g);
+		}
 	}
 	
 	public void move() {
+		
+		for (int counter = bodySegments; counter > 0; counter --) {
+			x[counter] = x[(counter - 1)];
+			y[counter] = y[(counter - 1)];
+		}
 		
 		if (leftDirection == true) {
 			x[0] -= dotSize;
@@ -205,16 +230,13 @@ public class Panel extends JPanel implements ActionListener, MouseListener {
 			y[0] += dotSize;
 		}
 	}
-
-
-	public void play(Graphics g) {
-		removeMenuButtons();
-		bodySegments = 2;
+	
+	public void gameOver(Graphics g){
 		
-		
-		timer = new Timer(DELAY, this);
-		//timer.start();
 	}
+
+
+	
 	
 	  private class TAdapter extends KeyAdapter {
 
