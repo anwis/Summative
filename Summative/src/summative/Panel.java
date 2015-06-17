@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
@@ -16,28 +17,29 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
-import javax.swing.Timer;
+//import javax.swing.Timer;
 
-public class Panel extends JPanel implements ActionListener, MouseListener {
+public class Panel extends JPanel implements ActionListener, MouseListener, KeyListener {
 
 	private JLabel title;
 	private JButton menuStart, menuQUIT, highScores, instructions;
-	private Timer timer;
+	//private Timer timer;
 	private Graphics draw;
     
-	private int SHAPEHEIGHT = 20;
-	private int SHAPEWIDTH = 20;
+	private int SHAPEHEIGHT = 25;
+	private int SHAPEWIDTH = 25;
 	private int BUTTONHEIGHT = 50;
 	private int BUTTONWIDTH = 150;
-	private int DELAY = 100;
+	private int DELAY = 95;
 	private int WIDTH = 650;
 	private int HEIGHT = 650;
 	private int map = (WIDTH * HEIGHT); // This variable accounts for all of the dots or pixels that are seeable in the game board
-	private int bodySegments;
+	private int bodySegmentsTOTAL;
 	private int appleX;
 	private int appleY;
 	private int randomNum;
 	private int dotSize = 15;
+	private int bodySegment;
     
 	private int x[] = new int[map];//
 	private int y[] = new int[map];
@@ -49,7 +51,6 @@ public class Panel extends JPanel implements ActionListener, MouseListener {
 	private boolean downDirection = false;
     
 	private Image apple;
-    
     
     
 	public Panel() {
@@ -149,6 +150,11 @@ public class Panel extends JPanel implements ActionListener, MouseListener {
     	if (e.getActionCommand().equals("Start")) {
         	play();
     	}
+    	
+    	if (inGame == true) {
+    		move();
+    		
+    	}
    	 
 	}
     
@@ -169,14 +175,14 @@ public class Panel extends JPanel implements ActionListener, MouseListener {
     
 	public void checkIfAppleWasEaten() {
     	if ((x[0] == appleX) && (y[0] == appleY)){
-        	bodySegments ++;
+        	bodySegmentsTOTAL ++;
         	createApple();
     	}
 	}
     
 	public void play() {
     	removeMenuButtons();
-    	bodySegments = 2;
+    	bodySegmentsTOTAL = 3;
    	 
     	draw = this.getGraphics();
     	drawStartingSnake(draw);
@@ -184,24 +190,25 @@ public class Panel extends JPanel implements ActionListener, MouseListener {
     	gameUpdate(draw);
 	}
     
-	public void gameUpdate(Graphics g){
+	public void gameUpdate(Graphics g){ 
     	while (inGame == true){
         	move();
-   		 drawHead(g);
+   		 	drawHead(g);
         	drawBody(g);
-       	// repaint();
+       	repaint();
     	try {
         	Thread.sleep(DELAY);
     	}
     	catch (Exception alternate) {
     	}
     	}
+
 	}
     
 	public void drawStartingSnake(Graphics g) {
-    	for (int counter = 0; counter < bodySegments; counter++) {
-        	x[counter] = SHAPEWIDTH + counter * SHAPEWIDTH;
-        	y[counter] = SHAPEHEIGHT;
+    	for (bodySegment = 0; bodySegment < bodySegmentsTOTAL; bodySegment++) {
+        	x[bodySegment] = SHAPEWIDTH + bodySegment * SHAPEWIDTH;
+        	y[bodySegment] = SHAPEHEIGHT;
         	inGame = true;
     	}
    	 
@@ -229,14 +236,15 @@ public class Panel extends JPanel implements ActionListener, MouseListener {
     
 	public void drawBody(Graphics g) {
     	if (inGame ==  true){
-    	for (int counter = 1; counter < bodySegments; counter ++) {
+    	for (bodySegment = 1; bodySegment < bodySegmentsTOTAL; bodySegment ++) {
+        	g.setColor(Color.BLACK);
+        	g.drawRect(x[bodySegment], y[bodySegment], SHAPEWIDTH, SHAPEHEIGHT);
         	g.setColor(Color.WHITE);
-        	g.drawRect(x[counter], y[counter], SHAPEWIDTH, SHAPEHEIGHT);
-        	g.fillRect(x[counter], y[counter], SHAPEWIDTH, SHAPEHEIGHT);
-        	if(counter == bodySegments-1){
+        	g.fillRect(x[bodySegment], y[bodySegment], SHAPEWIDTH, SHAPEHEIGHT);
+        	if(bodySegment == bodySegmentsTOTAL-1){
        		 g.setColor(Color.BLACK);
-       		 g.drawRect(x[bodySegments], y[bodySegments], SHAPEWIDTH, SHAPEHEIGHT);
-            	g.fillRect(x[bodySegments], y[bodySegments], SHAPEWIDTH, SHAPEHEIGHT);
+       		 g.drawRect(x[bodySegmentsTOTAL], y[bodySegmentsTOTAL], SHAPEWIDTH, SHAPEHEIGHT);
+            	g.fillRect(x[bodySegmentsTOTAL], y[bodySegmentsTOTAL], SHAPEWIDTH, SHAPEHEIGHT);
         	}
     	}
     	Toolkit.getDefaultToolkit().sync();
@@ -247,12 +255,11 @@ public class Panel extends JPanel implements ActionListener, MouseListener {
 	}
     
 	public void move() {
-    	// This will allow the body segments of to move
-    	for (int counter = bodySegments; counter > 0; counter --) {
-        	x[counter] = x[(counter - 1)];
-        	y[counter] = y[(counter - 1)];
+    	// This will allow the body segments to move
+    	for (bodySegment = bodySegmentsTOTAL; bodySegment > 0; bodySegment --) {
+        	x[bodySegment] = x[(bodySegment - 1)];
+        	y[bodySegment] = y[(bodySegment - 1)];
     	}
-   	 
    	 
     	if (leftDirection == true) {
         	x[0] -= dotSize;
@@ -269,6 +276,7 @@ public class Panel extends JPanel implements ActionListener, MouseListener {
     	if (upDirection == true) {
         	y[0] += dotSize;
     	}
+    	
 	}
     
 	public void gameOver(Graphics g){
@@ -277,40 +285,56 @@ public class Panel extends JPanel implements ActionListener, MouseListener {
 
 
 	public void checkCollision(){
-   	 
+		if (bodySegmentsTOTAL > 4) {
+			for (bodySegment = 0; bodySegment < bodySegmentsTOTAL; bodySegment ++) {
+				
+		}
+		
+		}
 	}
     
-  	private class TAdapter extends KeyAdapter {
-
-    	 
-        	public void keyPressed(KeyEvent e) {
-
-            	int key = e.getKeyCode();
-
-            	if ((key == KeyEvent.VK_LEFT) && (!rightDirection)) {
-                	leftDirection = true;
-                	upDirection = false;
-                	downDirection = false;
-            	}
-
-            	if ((key == KeyEvent.VK_RIGHT) && (!leftDirection)) {
-                	rightDirection = true;
-                	upDirection = false;
-                	downDirection = false;
-            	}
-
-            	if ((key == KeyEvent.VK_UP) && (!downDirection)) {
-                	upDirection = true;
-                	rightDirection = false;
-                	leftDirection = false;
-            	}
-
-            	if ((key == KeyEvent.VK_DOWN) && (!upDirection)) {
-                	downDirection = true;
-                	rightDirection = false;
-                	leftDirection = false;
-            	}
-        	}
+	@Override
+	public void keyPressed(KeyEvent e) {
+		System.out.println("key was pressed");
+		int key = e.getKeyCode();
+    	
+    	if ((key == KeyEvent.VK_LEFT) && (!rightDirection)) {
+        	leftDirection = true;
+        	upDirection = false;
+        	downDirection = false;
+        	System.out.println("key was pressed");
     	}
+
+    	if ((key == KeyEvent.VK_RIGHT) && (!leftDirection)) {
+        	rightDirection = true;
+        	upDirection = false;
+        	downDirection = false;
+    	}
+
+    	if ((key == KeyEvent.VK_UP) && (!downDirection)) {
+        	upDirection = true;
+        	rightDirection = false;
+        	leftDirection = false;
+    	}
+
+    	if ((key == KeyEvent.VK_DOWN) && (!upDirection)) {
+        	downDirection = true;
+        	rightDirection = false;
+        	leftDirection = false;
+    	}
+    	
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

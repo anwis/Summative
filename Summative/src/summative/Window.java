@@ -25,8 +25,7 @@ public class Window extends JFrame{
         setLocationByPlatform(true);
         container.add(basicPanel);
         container.validate();
-        
-        
+                
 
 	}
 	
