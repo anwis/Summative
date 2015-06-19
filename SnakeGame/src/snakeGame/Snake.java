@@ -39,29 +39,55 @@ public class Snake extends JPanel implements ActionListener {
 
 	public Snake() {
 		addKeyListener(new Keyboard());
+		
 		setFocusable(true);
+		validate();
 	}
 	
 	
-	public void InitiateGame(){
-		
-	}
-	
-	public void gameUpdate(Graphics g) {
-		
-		
-		//setFocusTraversalKeysEnabled(false);
-		while (inGame == true) {
+	public void createApple() {
+		randomNum = (int) (Math.random() * map);
+		appleX = randomNum;
 
+		randomNum = (int) (Math.random() * map);
+		appleY = randomNum;
+
+	}
+
+	public void checkIfAppleWasEaten() {
+		if ((x[0] == appleX) && (y[0] == appleY)) {
+			bodySegmentsTOTAL++;
+			createApple();
+		}
+	}
+
+	public void play() {
+
+		bodySegmentsTOTAL = 3;
+
+		draw = this.getGraphics();
+		drawStartingSnake(draw);
+
+		gameUpdate(draw);
+	}
+
+	public void gameUpdate(Graphics g) {
+		draw = this.getGraphics();
+		setFocusable(true);
+		setFocusTraversalKeysEnabled(false);
+		while (inGame == true) {
 			move();
 			drawHead(g);
 			drawBody(g);
+			checkCollision();
 			repaint();
+			
 			try {
 				Thread.sleep(DELAY);
 			} catch (Exception alternate) {
 			}
 		}
+
 	}
 
 	public void drawStartingSnake(Graphics g) {
@@ -74,7 +100,9 @@ public class Snake extends JPanel implements ActionListener {
 	}
 
 	public void paintComponent(Graphics g) {
+
 		super.paintComponent(g);
+
 		if (inGame == true) {
 			drawHead(g);
 			drawBody(g);
@@ -105,9 +133,7 @@ public class Snake extends JPanel implements ActionListener {
 				}
 			}
 			Toolkit.getDefaultToolkit().sync();
-		} else {
-			gameOver(g);
-		}
+		} 
 	}
 
 	public void move() {
@@ -117,6 +143,8 @@ public class Snake extends JPanel implements ActionListener {
 			y[bodySegment] = y[(bodySegment - 1)];
 		}
 
+		
+		
 		if (leftDirection == true) {
 			x[0] -= dotSize;
 		}
@@ -132,28 +160,55 @@ public class Snake extends JPanel implements ActionListener {
 		if (upDirection == true) {
 			y[0] += dotSize;
 		}
+		repaint();
 
+		//System.out.println(leftDirection + " " + rightDirection + " " + upDirection + " " + downDirection);
 	}
 
-	public void gameOver(Graphics g) {
+	public void gameOver() {
+			System.out.println("game over");
 
 	}
 
 	public void checkCollision() {
 		if (bodySegmentsTOTAL > 4) {
-			for (bodySegment = 0; bodySegment < bodySegmentsTOTAL; bodySegment++) {
-
+			for (bodySegment = bodySegmentsTOTAL; bodySegment > 0; bodySegment--) {
+				if (x[0] == x[bodySegment] && y[0] == y[bodySegment]){
+					inGame = false;
+				}
 			}
+			
+			  if (y[0] >= HEIGHT) {
+		            inGame = false;
+		        }
 
+		        if (y[0] < 0) {
+		            inGame = false;
+		        }
+
+		        if (x[0] >= WIDTH) {
+		            inGame = false;
+		        }
+
+		        if (x[0] < 0) {
+		            inGame = false;
+		        }
+
+		       
 		}
+		//System.out.println(x[0] + " " + y[0]);
+			if (inGame == false){
+				gameOver();
+			}
 	}
 	
 	public class Keyboard extends KeyAdapter {
 		
+		
 		public void keyPressed(KeyEvent e) {
 			//System.out.println("key was pressed");
 			int key = e.getKeyCode();
-
+			e.consume();
 			if ((key == KeyEvent.VK_LEFT) && (!rightDirection)) { // snake cant turn
 																	// into itself
 				leftDirection = true;
@@ -182,6 +237,10 @@ public class Snake extends JPanel implements ActionListener {
 				leftDirection = false;
 				System.out.println("key was pressed");
 			}
+			
+			if (key == KeyEvent.VK_ENTER) {
+				play();
+			}
 
 		}
 
@@ -196,17 +255,11 @@ public class Snake extends JPanel implements ActionListener {
 		}
 	}
 
-	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (inGame ==  true) {
-			move();
-			bodySegmentsTOTAL = 3;
+		
+		
 
-			draw = this.getGraphics();
-			drawStartingSnake(draw);
-
-			gameUpdate(draw);
-		}
+		
 		
 	}
 }
